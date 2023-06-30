@@ -21,7 +21,7 @@ public class People {
     private LocalDateTime debutDate;
     private LocalDateTime finalgameDate;
     private LocalDateTime deathDate;
-
+    
     
 
     public People(String playerID, String birthCountry, String birthCity, String deathCountry, String deathCity,
@@ -184,10 +184,7 @@ public class People {
 
 	@Override
 	public String toString() {
-		return nameFirst + " " + nameLast;
+		return "NOME: "+ nameFirst + " COGNOME: " +nameLast + " ID: " +  playerID;
 	}
-    
-    
-
 }
 

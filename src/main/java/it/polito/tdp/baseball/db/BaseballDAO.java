@@ -6,18 +6,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import it.polito.tdp.baseball.model.Appearances;
-import it.polito.tdp.baseball.model.Arco;
+import it.polito.tdp.baseball.model.Edge;
 import it.polito.tdp.baseball.model.People;
+import it.polito.tdp.baseball.model.Salary;
 import it.polito.tdp.baseball.model.Team;
 
 
 public class BaseballDAO {
 	
-	public List<People> readAllPlayers(){
+	public void readAllPlayers(Map<String, People> playerIdMap){
 		String sql = "SELECT * "
 				+ "FROM people";
 		List<People> result = new ArrayList<People>();
@@ -28,7 +30,7 @@ public class BaseballDAO {
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
-				result.add(new People(rs.getString("playerID"), 
+				People p = new People(rs.getString("playerID"), 
 						rs.getString("birthCountry"), 
 						rs.getString("birthCity"), 
 						rs.getString("deathCountry"), 
@@ -42,11 +44,13 @@ public class BaseballDAO {
 						getBirthDate(rs), 
 						getDebutDate(rs), 
 						getFinalGameDate(rs), 
-						getDeathDate(rs)) );
+						getDeathDate(rs));
+				
+				result.add(p) ;
+				playerIdMap.put(p.getPlayerID(), p) ;
 			}
 
 			conn.close();
-			return result;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -192,5 +196,58 @@ public class BaseballDAO {
 		}
 		return null;
 	}
+	
+	public List<Salary> getYear(int year) {
+		
+		List<Salary> listaAnni = new ArrayList<Salary> () ;
+		String sql = "select * "
+				+ "from salaries "
+				+ "where year = ? " ;
+		
+		try { 
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, year);
+			ResultSet rs = st.executeQuery();
+			
+			while(rs.next()) {
+				
+				Salary s = new Salary (rs.getInt(1),year, rs.getString(3), rs.getInt(4), rs.getString(5), rs.getDouble(6)) ;
+				listaAnni.add(s) ;
+				
+			}
+			
+		}
+		catch(SQLException e){
+			
+		}
+		return listaAnni ;
+	}
 
+	public List<Edge> getAppearances(int year,Map<String, People> playerIdMap) {
+		
+		List<Edge> listaArchi = new LinkedList<Edge> () ;
+		String sql = "select a1.playerId ,  a2.playerId "
+				+ "from appearances a1, appearances a2 "
+				+ "where a1.playerId  != a2.playerId and a1.year = a2.year and a1.year = ? and a1.`teamID` = a2.teamId " ;
+		try { 
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, year);
+			ResultSet rs = st.executeQuery();
+			
+			while(rs.next()) {
+				People p1 = playerIdMap.get(rs.getString("a1.playerId")) ;
+				People p2 = playerIdMap.get(rs.getString("a2.playerId")) ;
+				
+				Edge e = new Edge (p1, p2);
+				listaArchi.add(e) ;
+			}
+			
+		}
+		catch(SQLException e){
+			
+		}
+		return listaArchi;
+	}
 }

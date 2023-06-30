@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import it.polito.tdp.baseball.model.Grado;
 import it.polito.tdp.baseball.model.Model;
 import it.polito.tdp.baseball.model.People;
 import javafx.event.ActionEvent;
@@ -50,6 +49,8 @@ public class FXMLController {
     @FXML
     void doCalcolaConnesse(ActionEvent event) {
     	
+    	txtResult.appendText("\nCI SONO " + this.model.getComponenteConnessa() + " COMPONENTI CONNESSE");
+    	
     }
 
     
@@ -57,18 +58,51 @@ public class FXMLController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	
+    	int anno ;
+    	double salario ;
+    	
+    	try {
+    		anno = Integer.parseInt(txtYear.getText()) ;
+    		salario = Double.parseDouble(txtSalary.getText()) ;
+    		
+    	}
+    	catch(NumberFormatException e) {
+    		e.printStackTrace();
+    		txtResult.setText("INSERIRE UN VALORE NUMERICO" ) ;
+    		return ;
+    	}
+    	
+    	
+    	
+    	if(this.model.getListaAnni(anno).isEmpty()) {
+    		txtResult.setText("L'ANNO INSERITO NON E' PRESENTE NEL DATABASE") ;
+    	}
+    	else {
+    		this.model.creaGrafo(anno, salario);
+    		this.model.addEdge(anno);
+    		txtResult.setText("GRAFO CREATO CORRETTAMENTE: \n") ;
+    		txtResult.appendText("# VERTICI: " + this.model.getVertexset() + "\n");
+    		txtResult.appendText("# ARCHI: " + this.model.getEdgeSet());
+    	}
+    	
+    	this.btnGradoMassimo.setDisable(false);
+    	this.btnConnesse.setDisable(false);
+    	this.btnDreamTeam.setDisable(false);
     }
 
     
     @FXML
     void doDreamTeam(ActionEvent event) {
-
+    	this.model.dreamTeam();
+    	txtResult.setText("DREAM TEAM CREATO ");
+    	txtResult.appendText(this.model.getDreamTeam().toString());
     }
 
     
     @FXML
     void doGradoMassimo(ActionEvent event) {
-
+    	txtResult.setText("GRADO MASSIMO : \n" );
+    	txtResult.appendText(this.model.getGradoMassimo());
     }
 
     

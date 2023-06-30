@@ -2,15 +2,24 @@ package it.polito.tdp.baseball.model;
 
 public class Salary {
 
-    private Integer iD;
-    private Integer year;
+    private int iD;
+    private int year;
     private String teamCode;
-    private Integer teamID;
+    private int teamID;
     private String playerID;
     private Double salary;
 
 
-    public Integer getID(){
+    public Salary(int id, int year, String teamCode, int teamId, String playerId, double salary) {
+		this.iD = id ;
+		this.year = year ;
+		this.teamCode = teamCode ;
+		this.teamID = teamId ;
+		this.playerID = playerId ;
+		this.salary = salary ;
+	}
+
+	public Integer getID(){
         return iD;
     }
 
